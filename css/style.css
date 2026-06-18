@@ -1,0 +1,898 @@
+
+/* ============================================================
+   CSS CUSTOM PROPERTIES — design tokens used site-wide
+   ============================================================ */
+:root{
+  /* ── Backgrounds derived from the darkest swatch (near-black purple) ── */
+  --bg:#09050f;
+  --bg2:rgba(12,4,24,.82);   /* deeper glassy base for dark mode */
+  --bg3:rgba(24,8,44,.86);
+
+  /* ── Primary accents from the colour palette swatches ── */
+  --neon-purple:#b026e0;  /* vivid magenta-purple (swatch 1) — primary accent */
+  --neon-bright:#e020e0;  /* bright magenta (swatch 2) — hero highlights */
+  --neon-gold:#c4a020;    /* golden-yellow (swatch 3) — warm accent */
+  --neon-pink:#e8579a;    /* hot pink (swatch 8) — CTA accent */
+  --neon-rose:#f0a0c0;    /* soft rose/pink (swatch 5) — subtle highlight */
+  --neon-rust:#b84010;    /* burnt orange (swatch 6) — warm contrast */
+  --mauve:#a07888;        /* muted mauve (swatch 9) — neutral accent */
+
+  /* ── Reassign blue/purple vars to palette equivalents (used throughout) ── */
+  --neon-blue:var(--neon-bright);   /* replaces old neon-blue with bright magenta */
+  --neon-blue-raw:#e020e0;          /* raw value for rgba() usage */
+
+  --text:#f0e8f8;        /* body text — light lavender white */
+  --text-dim:#9a80aa;    /* muted / placeholder text */
+  --border:rgba(176,38,224,.28);    /* glowing purple border */
+  --border2:rgba(196,160,32,.25);   /* gold border variant */
+  --font-display:'Orbitron',monospace;
+  --font-body:'Rajdhani',sans-serif;
+  --font-ui:'Inter',sans-serif;
+  --radius:8px;
+  --radius-lg:16px;
+  --glow-blue:0 0 18px rgba(224,32,224,.42);   /* slightly darker glow for deep mode */
+  --glow-purple:0 0 18px rgba(176,38,224,.42);
+  --glow-gold:0 0 18px rgba(196,160,32,.32);
+  --transition:.25s ease;
+}
+
+/* ============================================================
+   LIGHT THEME OVERRIDES
+   Applied when `html[data-theme="light"]` is present on <html>
+   Re-uses the same CSS custom properties but values suitable for
+   a bright/light UI while keeping the rest of the stylesheet intact.
+   ============================================================ */
+html[data-theme="light"]{
+  --bg:#f6f7fb;
+  --bg2:rgba(255,255,255,.92);
+  --bg3:rgba(245,246,250,.95);
+
+  --text:#000000;
+  --text-dim:#030303;
+  --border:rgb(0, 0, 0);
+  --border2:rgb(0, 0, 0);
+
+  --neon-purple:#7a3a9a;
+  --neon-bright:#a84aa8;
+  --glow-blue:0 0 14px rgba(168,74,168,.22);
+  --glow-purple:0 0 12px rgba(122,58,154,.12);
+  --glow-gold:0 0 12px rgba(196,160,32,.08);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  /* Combined background using the current theme variables so dark/light mode switches cleanly. */
+  background: linear-gradient(135deg, var(--bg), var(--bg3) 65%);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:var(--font-body)}
+input,select,textarea{font-family:var(--font-ui)}
+img{max-width:100%}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+.neon-text-blue{color:var(--neon-blue);text-shadow:var(--glow-blue)}
+.neon-text-purple{color:var(--neon-purple);text-shadow:var(--glow-purple)}
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(1.4rem,3vw,2.2rem);
+  letter-spacing:.08em;
+  margin-bottom:1.5rem;
+}
+.btn{
+  display:inline-block;
+  padding:.7rem 2rem;
+  border-radius:var(--radius);
+  font-family:var(--font-display);
+  font-size:.75rem;
+  letter-spacing:.12em;
+  font-weight:700;
+  border:none;
+  transition:var(--transition);
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--neon-purple),var(--neon-bright));
+  color:#fff;
+  box-shadow:var(--glow-blue);
+}
+.btn-primary:hover{box-shadow:0 0 30px rgba(224,32,224,.85);transform:translateY(-2px)}
+.btn-outline{
+  background:transparent;
+  border:1px solid var(--neon-blue);
+  color:var(--neon-blue);
+}
+.btn-outline:hover{background:rgba(176,38,224,.12);box-shadow:var(--glow-blue)}
+
+/* ============================================================
+   PAGE VISIBILITY — single-page router
+   ============================================================ */
+/* Each page section is hidden by default; JS toggles .active */
+.page{display:none}
+.page.active{display:block}
+
+/* ============================================================
+   NAV BAR — shared across all pages
+   ============================================================ */
+nav{
+  position:sticky;top:0;z-index:1000;
+  background:rgba(19,10,24,.80);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;
+  height:66px;
+}
+/* Logo acts as home button */
+.nav-logo{
+  height:48px;
+  cursor:pointer;
+  transition:filter var(--transition);
+}
+.nav-logo:hover{filter:drop-shadow(0 0 8px var(--neon-blue))}
+
+/* Search bar */
+.nav-search{
+  display:flex;align-items:center;gap:.5rem;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:.35rem .8rem;
+}
+.nav-search input{
+  background:transparent;border:none;outline:none;
+  color:var(--text);font-size:.85rem;width:180px;
+}
+.nav-search svg{color:var(--text-dim);flex-shrink:0}
+
+/* Nav links */
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{
+  font-family:var(--font-display);
+  font-size:.7rem;letter-spacing:.1em;
+  color:var(--text-dim);
+  transition:color var(--transition);
+  position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;
+  background:var(--neon-blue);transition:width var(--transition);
+}
+.nav-links a:hover,.nav-links a.active-link{color:var(--neon-blue)}
+.nav-links a:hover::after,.nav-links a.active-link::after{width:100%}
+
+/* Profile icon */
+.nav-profile{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--neon-purple);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--neon-purple);
+  transition:box-shadow var(--transition);
+}
+.nav-profile:hover{box-shadow:var(--glow-purple)}
+
+/* Mobile nav toggle */
+.nav-toggle{display:none;}
+.nav-hamburger{
+  display:none;
+  width:44px;height:44px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:16px;
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  gap:.3rem;
+  transition:background var(--transition),border-color var(--transition);
+}
+.nav-hamburger:hover{background:rgba(255,255,255,.08);border-color:var(--neon-blue);}
+.nav-hamburger span{
+  display:block;
+  width:20px;
+  height:2px;
+  border-radius:999px;
+  background:currentColor;
+  transition:transform .2s ease,opacity .2s ease;
+}
+.nav-toggle:checked + .nav-hamburger span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.nav-toggle:checked + .nav-hamburger span:nth-child(2){opacity:0;}
+.nav-toggle:checked + .nav-hamburger span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+
+/* ============================================================
+   FOOTER — shared across all pages
+   ============================================================ */
+footer{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:3rem 4rem;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2rem;
+}
+.footer-col h4{
+  font-family:var(--font-display);
+  font-size:.7rem;letter-spacing:.15em;
+  color:var(--neon-blue);margin-bottom:1rem;
+}
+.footer-col p,.footer-col a{
+  font-size:.9rem;color:var(--text-dim);
+  display:block;margin-bottom:.4rem;
+  transition:color var(--transition);
+}
+.footer-col a:hover{color:var(--neon-blue)}
+
+/* ============================================================
+   HOME PAGE
+   ============================================================ */
+/* Hero section */
+#home .hero{
+  position:relative;min-height:90vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:4rem 6rem;
+  text-align:center;
+  padding:4rem 2rem;
+  overflow:hidden;
+}
+/* grid background removed */
+
+#home .hero-eyebrow{
+  font-family:var(--font-display);
+  font-size:.7rem;letter-spacing:.25em;
+  color:var(--neon-blue);margin-bottom:1rem;
+}
+#home .hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(2rem,6vw,4.5rem);
+  font-weight:900;letter-spacing:.06em;
+  line-height:1.1;margin-bottom:1.5rem;
+}
+#home .hero-sub{
+  max-width:560px;font-size:1.1rem;
+  color:var(--text-dim);line-height:1.7;margin-bottom:2.5rem;
+  text-align:left;
+}
+/* Decorative blob behind hero text */
+#home .hero-blob{
+  position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(176,38,224,.18),rgba(196,160,32,.06) 50%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+/* Home feature image row */
+#home .feature-row{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--border);
+}
+#home .feature-row .feat-img{
+  aspect-ratio:16/7;overflow:hidden;
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);font-size:2rem;
+}
+
+/* (info-section grid removed — home page uses stacked layout per wireframe) */
+
+/* Book Now video section */
+#home .cta-video-wrap{
+  margin:0 4rem;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  border:1px solid var(--border);
+  position:relative;
+  aspect-ratio:16/7;
+  background:linear-gradient(135deg,#1c0f26,#25143a,#1c0f26);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1.5rem;
+}
+/* Animated scan-line effect over the video placeholder */
+#home .cta-video-wrap::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    0deg,transparent,transparent 3px,rgba(176,38,224,.03) 3px,rgba(176,38,224,.03) 4px
+  );pointer-events:none;
+}
+/* Purple/gold gradient overlay at bottom for text readability */
+#home .cta-video-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(19,10,24,.85) 0%,transparent 50%);
+  pointer-events:none;
+}
+#home .cta-video-wrap .video-label{
+  font-family:var(--font-display);font-size:.7rem;letter-spacing:.25em;
+  color:var(--neon-gold);text-shadow:var(--glow-gold);z-index:1;
+}
+#home .cta-video-wrap h3{
+  font-family:var(--font-display);font-size:clamp(1rem,2.5vw,1.6rem);
+  letter-spacing:.08em;z-index:1;text-align:center;
+}
+/* Big circular play button in the centre of the video */
+#home .cta-video-wrap .play-btn{
+  width:72px;height:72px;border-radius:50%;z-index:1;
+  background:linear-gradient(135deg,var(--neon-purple),var(--neon-bright));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;padding-left:4px;
+  box-shadow:0 0 30px rgba(176,38,224,.6),0 0 60px rgba(224,32,224,.3);
+  transition:transform var(--transition),box-shadow var(--transition);cursor:pointer;border:none;color:#fff;
+}
+#home .cta-video-wrap .play-btn:hover{
+  transform:scale(1.12);
+  box-shadow:0 0 40px rgba(176,38,224,.9),0 0 80px rgba(224,32,224,.5);
+}
+/* Book Now button sitting below the play button inside the video area */
+#home .cta-video-wrap .book-now-btn{
+  z-index:1;margin-top:.5rem;
+}
+
+/* Side-by-side image + text */
+#home .split-section{
+  padding:5rem 4rem;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;align-items:center;
+}
+#home .split-img{
+  aspect-ratio:4/3;border-radius:var(--radius-lg);
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);font-size:2.5rem;
+}
+
+/* Bottom game-card grid */
+#home .game-preview{
+  padding:4rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:2rem;
+}
+#home .game-preview .card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+}
+#home .game-preview .card-img{
+  aspect-ratio:16/9;
+  background:linear-gradient(135deg,var(--bg3),var(--bg2));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);font-size:2.5rem;
+}
+#home .game-preview .card-body{padding:1.5rem}
+#home .game-preview .card-body h4{
+  font-family:var(--font-display);font-size:.85rem;letter-spacing:.08em;
+  margin-bottom:.5rem;
+}
+#home .game-preview .card-body p{font-size:.9rem;color:var(--text-dim)}
+
+/* ============================================================
+   BOOKING PAGE
+   ============================================================ */
+#booking .book-hero{
+  background:linear-gradient(180deg,rgba(0,200,255,.05),transparent);
+  padding:4rem;text-align:center;
+}
+#booking .book-hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(2rem,5vw,3.5rem);letter-spacing:.1em;margin-bottom:1rem;
+}
+
+/* Video placeholder */
+#booking .video-wrap{
+  margin:0 4rem;aspect-ratio:16/7;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  display:flex;align-items:center;justify-content:center;gap:1rem;
+  color:var(--text-dim);font-size:3rem;
+}
+
+/* Booking form area */
+#booking .book-form-area{
+  padding:4rem;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:3rem;align-items:start;
+}
+#booking .book-desc{font-size:.95rem;color:var(--text-dim);line-height:1.8}
+
+/* Calendar widget */
+.calendar-widget{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:1.5rem;
+}
+.calendar-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1rem;
+}
+.calendar-header .dt-label{
+  font-family:var(--font-display);font-size:.75rem;
+  color:var(--neon-blue);letter-spacing:.08em;
+}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal-grid .day-name{font-size:.7rem;color:var(--text-dim);padding:.3rem 0}
+.cal-grid .day{
+  padding:.4rem;font-size:.8rem;border-radius:4px;cursor:pointer;
+  transition:background var(--transition);
+}
+.cal-grid .day:hover{background:rgba(176,38,224,.15)}
+.cal-grid .day.today{background:var(--neon-blue);color:#000;font-weight:700}
+.cal-grid .day.selected{background:var(--neon-purple);color:#fff}
+
+/* Game category selector */
+.form-row{margin-top:1.5rem}
+.form-row label{
+  display:block;font-size:.8rem;letter-spacing:.08em;
+  color:var(--text-dim);margin-bottom:.5rem;
+}
+.form-control{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);padding:.6rem 1rem;
+  color:var(--text);font-size:.9rem;outline:none;
+  transition:border-color var(--transition);
+}
+.form-control:focus{border-color:var(--neon-blue)}
+.num-input{display:flex;align-items:center;gap:.5rem}
+.num-input input{width:80px;text-align:center}
+.num-btn{
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--neon-blue);width:32px;height:32px;
+  border-radius:var(--radius);font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--transition);
+}
+.num-btn:hover{background:rgba(176,38,224,.15)}
+
+/* Game category checkbox list */
+.cat-list{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);padding:.8rem;
+  display:flex;flex-direction:column;gap:.5rem;
+}
+.cat-item{display:flex;align-items:center;gap:.6rem;font-size:.85rem}
+.cat-item input[type=checkbox]{accent-color:var(--neon-blue)}
+
+/* Map placeholder */
+#booking .map-area{
+  margin:0 4rem 4rem;
+  aspect-ratio:3/1;border-radius:var(--radius-lg);
+  background:var(--bg2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);font-size:2rem;gap:1rem;overflow:hidden;
+  position:relative;
+}
+.map-overlay{
+  position:absolute;bottom:1rem;left:1rem;
+  background:rgba(10,10,18,.85);border:1px solid var(--border);
+  border-radius:var(--radius);padding:.5rem 1rem;
+  font-size:.8rem;color:var(--neon-blue);
+}
+
+/* VR screenshots row */
+#booking .screenshots{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1rem;margin:0 4rem 4rem;
+}
+#booking .screenshots .ss{
+  aspect-ratio:16/9;border-radius:var(--radius);
+  background:var(--bg2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);font-size:2rem;overflow:hidden;
+}
+
+/* Payment modal */
+.payment-modal{
+  margin:0 4rem 4rem;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:3rem;max-width:420px;
+}
+.payment-modal h3{
+  font-family:var(--font-display);font-size:.85rem;letter-spacing:.1em;
+  margin-bottom:2rem;color:var(--text-dim);
+}
+.pay-btn{
+  width:100%;padding:1rem;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--bg3);
+  color:var(--text);font-size:1.1rem;display:flex;
+  align-items:center;justify-content:center;gap:.8rem;
+  margin-bottom:1rem;transition:border-color var(--transition),background var(--transition);
+}
+.pay-btn:hover{border-color:var(--neon-blue);background:rgba(176,38,224,.08)}
+.pay-cancel{
+  display:block;text-align:right;margin-top:1rem;
+  font-size:.85rem;color:var(--text-dim);cursor:pointer;
+  transition:color var(--transition);
+}
+.pay-cancel:hover{color:var(--neon-blue)}
+
+/* ============================================================
+   GAME LIBRARY PAGE
+   ============================================================ */
+#library .lib-hero{
+  background:linear-gradient(135deg,var(--bg2),var(--bg));
+  padding:3rem 4rem 2rem;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2rem;align-items:center;
+  border-bottom:1px solid var(--border);
+}
+#library .lib-hero h1{
+  font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2.8rem);
+  letter-spacing:.08em;margin-bottom:.75rem;
+}
+#library .lib-hero p{color:var(--text-dim);font-size:.95rem;line-height:1.7}
+#library .lib-hero-img{
+  aspect-ratio:4/3;border-radius:var(--radius-lg);
+  background:linear-gradient(135deg,var(--bg3),var(--bg2));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);font-size:3rem;border:1px solid var(--border);
+}
+
+/* Search bar inside library */
+#library .lib-search-bar{
+  padding:2rem 4rem 0;display:flex;justify-content:flex-end;
+}
+#library .lib-search-bar .search-inner{
+  display:flex;align-items:center;gap:.5rem;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:.5rem 1rem;width:260px;
+}
+#library .lib-search-bar input{
+  background:transparent;border:none;outline:none;
+  color:var(--text);font-size:.9rem;width:100%;
+}
+
+/* Game grid */
+#library .game-grid{
+  padding:2rem 4rem 4rem;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;
+}
+/* Each game card */
+.game-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+  transition:transform var(--transition),box-shadow var(--transition),border-color var(--transition);
+  cursor:pointer;
+}
+.game-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,.5),var(--glow-blue);
+  border-color:var(--neon-blue);
+}
+.game-card .card-img{
+  aspect-ratio:16/9;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;color:var(--text-dim);
+}
+/* Alternating gradient tones for visual variety */
+.game-card:nth-child(1) .card-img{background:linear-gradient(135deg,#1c0a2a,#2a0a3a)}
+.game-card:nth-child(2) .card-img{background:linear-gradient(135deg,#25083a,#300a40)}
+.game-card:nth-child(3) .card-img{background:linear-gradient(135deg,#180a24,#200830)}
+.game-card:nth-child(4) .card-img{background:linear-gradient(135deg,#1a0820,#250a2a)}
+.game-card:nth-child(5) .card-img{background:linear-gradient(135deg,#220830,#380a40)}
+.game-card:nth-child(6) .card-img{background:linear-gradient(135deg,#1a0828,#200a30)}
+.game-card:nth-child(7) .card-img{background:linear-gradient(135deg,#2a0830,#3a0840)}
+.game-card:nth-child(8) .card-img{background:linear-gradient(135deg,#0a1828,#180a35)}
+.game-card:nth-child(9) .card-img{background:linear-gradient(135deg,#1c0a2e,#250a38)}
+.game-card .card-info{padding:1rem 1.2rem 1.2rem}
+.game-card .card-info h4{
+  font-family:var(--font-display);font-size:.75rem;letter-spacing:.08em;
+  color:var(--text);margin-bottom:.3rem;
+}
+.game-card .card-info .tag{
+  display:inline-block;font-size:.7rem;padding:.2rem .6rem;
+  border-radius:20px;background:rgba(176,38,224,.12);
+  color:var(--neon-blue);margin-top:.3rem;margin-right:.3rem;
+}
+
+/* ============================================================
+   PRICING PAGE
+   ============================================================ */
+#pricing .pricing-hero{
+  padding:4rem 4rem 2rem;text-align:center;
+}
+#pricing .pricing-hero h1{
+  font-family:var(--font-display);font-size:clamp(1.8rem,4vw,3rem);
+  letter-spacing:.1em;margin-bottom:1rem;
+}
+#pricing .pricing-hero p{
+  max-width:550px;margin:0 auto;color:var(--text-dim);font-size:1rem;line-height:1.7;
+}
+
+/* Toggle Monthly/Annual */
+.toggle-row{display:flex;align-items:center;justify-content:center;gap:1rem;padding:1.5rem 0 3rem}
+.toggle-btn{
+  padding:.5rem 1.5rem;border-radius:20px;
+  border:1px solid var(--border);
+  background:transparent;color:var(--text-dim);
+  font-family:var(--font-display);font-size:.7rem;letter-spacing:.08em;
+  transition:all var(--transition);
+}
+.toggle-btn.active{
+  background:var(--neon-purple);color:#fff;
+  border-color:var(--neon-purple);box-shadow:var(--glow-purple);
+}
+
+/* Pricing cards */
+.pricing-cards{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;padding:0 4rem 4rem;
+}
+.plan-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:2rem;
+  position:relative;transition:box-shadow var(--transition),border-color var(--transition);
+}
+.plan-card:hover{border-color:var(--neon-blue);box-shadow:var(--glow-blue)}
+.plan-card.featured{
+  border-color:var(--neon-purple);
+  box-shadow:var(--glow-purple);
+  background:linear-gradient(160deg,rgba(196,160,32,.06),var(--bg2));
+}
+.plan-card .badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--neon-purple);color:#fff;
+  font-family:var(--font-display);font-size:.6rem;letter-spacing:.1em;
+  padding:.3rem 1rem;border-radius:20px;white-space:nowrap;
+}
+.plan-card h3{
+  font-family:var(--font-display);font-size:1rem;letter-spacing:.1em;
+  margin-bottom:.5rem;
+}
+.plan-card .price{
+  font-family:var(--font-display);font-size:2.2rem;font-weight:900;
+  color:var(--neon-blue);margin:1rem 0;
+}
+.plan-card .price span{font-size:.8rem;color:var(--text-dim)}
+.plan-card ul{list-style:none;margin-bottom:2rem}
+.plan-card ul li{
+  font-size:.9rem;color:var(--text-dim);
+  padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:.6rem;
+}
+.plan-card ul li::before{content:'✦';color:var(--neon-blue);font-size:.6rem}
+.plan-card.featured ul li::before{color:var(--neon-purple)}
+
+/* Sign-in / Create Account section */
+.auth-section{
+  margin:0 4rem 4rem;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:0;overflow:hidden;
+}
+.auth-panel{padding:3rem}
+.auth-panel:first-child{border-right:1px solid var(--border)}
+.auth-panel h3{
+  font-family:var(--font-display);font-size:.9rem;letter-spacing:.1em;
+  margin-bottom:2rem;color:var(--text);
+}
+.auth-panel .form-row{margin-bottom:1.2rem}
+.auth-divider{
+  text-align:center;color:var(--text-dim);
+  font-size:.8rem;margin:1rem 0;
+}
+.social-btns{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.social-btn{
+  padding:.6rem;border:1px solid var(--border);
+  border-radius:var(--radius);background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  color:var(--text-dim);font-size:.8rem;cursor:pointer;
+  transition:border-color var(--transition);
+}
+.social-btn:hover{border-color:var(--neon-blue);color:var(--text)}
+.forgot-link{
+  font-size:.8rem;color:var(--neon-blue);cursor:pointer;
+  transition:opacity var(--transition);
+}
+.forgot-link:hover{opacity:.7}
+.guest-btn{
+  width:100%;padding:.6rem;
+  border:1px solid var(--border);background:var(--bg3);
+  color:var(--text-dim);border-radius:var(--radius);
+  font-size:.85rem;cursor:pointer;margin-top:.5rem;
+  transition:border-color var(--transition),color var(--transition);
+}
+.guest-btn:hover{border-color:var(--neon-blue);color:var(--text)}
+
+/* ============================================================
+   ACCESSIBILITY PAGE
+   ============================================================ */
+#accessibility .access-hero{
+  padding:4rem 4rem 3rem;text-align:center;
+}
+#accessibility .access-hero h1{
+  font-family:var(--font-display);font-size:clamp(1.8rem,4vw,3rem);
+  letter-spacing:.1em;margin-bottom:1rem;
+}
+#accessibility .access-hero p{
+  max-width:600px;margin:0 auto;
+  color:var(--text-dim);line-height:1.7;
+}
+
+/* ACCESSIBILITY F
+*/
+ 
+/* BASE: ensure pages can be overridden */
+.page {
+  transition: none !important;
+}
+
+/* HIGH CONTRAST */
+body.high-contrast .page,
+body.high-contrast {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+body.high-contrast .access-section,
+body.high-contrast .access-card,
+body.high-contrast footer {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+/* FORCE ALL TEXT */
+body.high-contrast * {
+  color: #fff !important;
+}
+
+/* LARGE TEXT */
+body.large-text .page {
+  font-size: 1.2em !important;
+}
+
+/* REDUCE MOTION */
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* COLOUR BLIND */
+body.colour-blind {
+  filter: hue-rotate(25deg) saturate(1.3);
+}
+/* Accordion / card grid for each category */
+.access-section{padding:0 4rem 3rem}
+.access-section h2{
+  font-family:var(--font-display);font-size:.85rem;letter-spacing:.15em;
+  color:var(--neon-blue);margin-bottom:1.5rem;
+  padding-bottom:.5rem;border-bottom:1px solid var(--border);
+}
+.access-cards{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;
+}
+.access-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:1.5rem;
+  transition:border-color var(--transition),box-shadow var(--transition);
+}
+.access-card:hover{border-color:var(--neon-purple);box-shadow:var(--glow-purple)}
+.access-card h4{
+  font-family:var(--font-display);font-size:.7rem;letter-spacing:.08em;
+  color:var(--neon-purple);margin-bottom:.8rem;
+}
+.access-card p{font-size:.85rem;color:var(--text-dim);line-height:1.7}
+
+/* Toggle controls */
+.access-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:.8rem;
+}
+.switch{
+  position:relative;width:44px;height:24px;
+}
+.switch input{opacity:0;width:0;height:0}
+.slider-round{
+  position:absolute;inset:0;border-radius:12px;
+  background:var(--bg3);border:1px solid var(--border);cursor:pointer;
+  transition:var(--transition);
+}
+.slider-round::before{
+  content:'';position:absolute;
+  height:16px;width:16px;left:3px;bottom:3px;
+  background:var(--text-dim);border-radius:50%;
+  transition:var(--transition);
+}
+.switch input:checked + .slider-round{background:rgba(176,38,224,.3);border-color:var(--neon-purple)}
+.switch input:checked + .slider-round::before{transform:translateX(20px);background:var(--neon-purple)}
+
+/* Apply / Cancel buttons */
+.access-actions{
+  display:flex;justify-content:center;gap:1.5rem;
+  padding:2rem 4rem 3rem;
+}
+
+/* Chat support bubble */
+.chat-bubble{
+  position:fixed;bottom:2rem;right:2rem;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--neon-purple),var(--neon-bright));
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.4),var(--glow-blue);
+  transition:transform var(--transition);z-index:900;font-size:1.5rem;
+}
+.chat-bubble:hover{transform:scale(1.1)}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--neon-purple);border-radius:3px}
+
+/* ============================================================
+   RESPONSIVE LAYOUT
+   ============================================================ */
+@media (max-width: 980px){
+  nav{flex-wrap:wrap;gap:.75rem;padding:0 1rem;height:auto;align-items:center;}
+  .nav-search{width:100%;max-width:360px;}
+  .nav-links{justify-content:center;gap:1rem;flex-wrap:wrap;width:100%;}
+  .nav-profile{margin-left:auto;}
+
+  header, #home .hero, #booking .book-hero, #library .lib-hero, #pricing .pricing-hero, #accessibility .access-hero{padding:3rem 1.5rem;}
+  #home .feature-row, #home .game-preview, #library .game-grid, #booking .book-form-area, #booking .screenshots, #accessibility .access-cards, .auth-section{grid-template-columns:1fr;}
+  #home .split-section, #library .lib-hero, #home .feature-row{padding:3rem 1.5rem;}
+  .cta-video-wrap, #booking .video-wrap, #booking .map-area, #booking .payment-modal, .payment-modal, #library .lib-search-bar, .access-actions{margin:0 1rem 1.5rem;}
+  .cta-video-wrap{padding:2rem;}
+  .cta-video-wrap video{width:100%;height:auto;max-width:100%;}
+  .pricing-cards, .game-preview, .price-cards, .auth-section, .access-cards{gap:1rem;}
+  footer{grid-template-columns:1fr;row-gap:1.5rem;padding:2rem 1.5rem;}
+}
+
+@media (max-width: 680px){
+  nav{padding:.75rem 1rem;position:relative;}
+  .nav-logo{height:auto;}
+  .nav-toggle{display:none;}
+  .nav-hamburger{display:flex;}
+  .nav-search{display:none;}
+  .nav-links{
+    display:none;
+    position:absolute;
+    left:1rem;
+    right:1rem;
+    top:100%;
+    flex-direction:column;
+    background:rgba(10,7,18,.98);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:1rem;
+    gap:1rem;
+    z-index:999;
+    box-shadow:0 30px 40px rgba(0,0,0,.2);
+  }
+  .nav-links a{
+    width:100%;
+    padding:.85rem 1rem;
+    border-radius:15px;
+    text-align:center;
+  }
+  .nav-links a::after{display:none;}
+  .nav-toggle:checked ~ .nav-links{display:flex;}
+  .nav-profile{margin-left:0;}
+
+  body{font-size:14px;}
+  .hero{padding:2.5rem 1rem;}
+  .hero-title{font-size:clamp(1.8rem,8vw,3rem);}
+  .hero-sub{max-width:100%;}
+  .feature-row, .split-section, .game-preview, .game-grid, .book-form-area, .screenshots, .access-cards{gap:1rem;}
+  .book-form-area, .library .lib-hero, .auth-section, .pricing-cards{padding:0 1rem;}
+  .pricing-cards{grid-template-columns:1fr;}
+  .plan-card{padding:1.5rem;}
+  .auth-panel{padding:2rem;border-right:none;}
+  .access-section{padding:0 1rem 2rem;}
+  .access-actions{flex-direction:column;align-items:stretch;gap:1rem;}
+  .game-card .card-info{padding:1rem;}
+  .payment-modal{padding:2rem;margin:0 1rem 1.5rem;}
+  .lib-search-bar{justify-content:center;padding:1.5rem 1rem 0;}
+  .lib-search-bar .search-inner{width:100%;max-width:100%;}
+  .game-card{min-height:auto;}
+  .footer-col{padding:0;}
+}
