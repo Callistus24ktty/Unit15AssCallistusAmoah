@@ -156,7 +156,13 @@
       <a href="#">Contact Us</a>
       <a href="#">FAQ</a>
     </div>
-    <p>&copy; 2026 PULSE VR. All rights reserved.</p>
+   <footer>
+  <p>&copy; <span id="year"></span> Callistus Amoah. All rights reserved.</p>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
   </footer>
 </div><!-- end #library -->
 
