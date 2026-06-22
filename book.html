@@ -184,6 +184,15 @@ function initMap() {
 }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-USHqjW8IQE7BloNMMA8MSpnOynqcLFc&callback=initMap" async defer></script>
+  <script>
+function adjustPlayers(change) {
+  const input = document.getElementById('playerCount');
+  const newVal = parseInt(input.value) + change;
+  if (newVal >= parseInt(input.min) && newVal <= parseInt(input.max)) {
+    input.value = newVal;
+  }
+}
+</script>
 </body>
 </html>
 
