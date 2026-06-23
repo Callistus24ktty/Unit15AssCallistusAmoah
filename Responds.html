@@ -214,8 +214,11 @@ h1{
     <button class="btn btn-primary" onclick="window.location.href='index.html'">BACK TO HOME</button>
     <button class="btn btn-outline" onclick="window.print()">PRINT CONFIRMATION</button>
   </div>
-   <div id="debugBooking" style="margin-top:1.5rem;color:#9a80aa;font-size:0.9rem;max-width:500px;word-break:break-word;"></div>
 
+  <!-- Debug info: show the raw booking URL parameters for troubleshooting -->
+  <div id="debugBooking" style="margin-top:1.5rem;color:#9a80aa;font-size:0.9rem;max-width:500px;word-break:break-word;"></div>
+
+<!-- Embedded confirmation script directly in Responds.html -->
 <script>
   function formatDate(dateISO) {
     const date = new Date(dateISO);
@@ -277,17 +280,11 @@ h1{
     const locationValue = document.querySelector('.details-card .detail-row:nth-child(5) .value');
     if (locationValue) {
       locationValue.textContent = booking.location;
-       
-    const debugBooking = document.getElementById('debugBooking');
-    if (debugBooking) {
-      debugBooking.textContent = 'Debug: ' + window.location.search.replace('?','');
-    }
     }
   }
 
   populateConfirmation();
 </script>
-<script src="javascript/javascript.js"></script>
 </body>
 </html>
 
