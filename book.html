@@ -178,51 +178,8 @@
   </footer>
 </div><!-- end #booking -->
 
-<script src="javascript/javascript.js"></script>
 <script>
-function initMap() {
-  const manchester = { lat: 53.4808, lng: -2.2426 };
-  const map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 12,
-    center: manchester,
-  });
-  new google.maps.Marker({
-    position: manchester,
-    map: map,
-    title: "Manchester",
-  });
-}
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-USHqjW8IQE7BloNMMA8MSpnOynqcLFc&callback=initMap" async defer></script>
-  <script>
-function adjustPlayers(change) {
-  const input = document.getElementById('playerCount');
-  const newVal = parseInt(input.value) + change;
-  if (newVal >= parseInt(input.min) && newVal <= parseInt(input.max)) {
-    input.value = newVal;
-  }
-}
-</script>
-</body>
-</html>
-
-
-<style>
-.nav-theme-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: 1rem;
-  font-size: 0.9rem;
-}
-
-/* Optional: make it tighter and clean */
-.nav-theme-toggle span {
-  font-size: 0.9rem;
-  opacity: 0.8;
-}
-</style>
-<script>
+// Booking page script: inline logic for date/time selection and booking confirmation.
 function initBookingPage() {
   const dateField = document.getElementById('bookingDate');
   if (dateField) {
@@ -232,12 +189,18 @@ function initBookingPage() {
     if (!dateField.value) {
       dateField.value = formatted;
     }
-    updateDate();
-    updateTime();
   }
 
-  if (document.getElementById('refNumber')) {
-    populateConfirmation();
+  const timeField = document.getElementById('bookingTime');
+  if (timeField && !timeField.value) {
+    timeField.value = '12:00';
+  }
+
+  if (dateField) {
+    updateDate();
+  }
+  if (timeField) {
+    updateTime();
   }
 }
 
@@ -320,50 +283,42 @@ function confirmBooking() {
     location: 'PULSE VR — MANCHESTER',
   };
 
-  localStorage.setItem('pulseBooking', JSON.stringify(booking));
-  window.location.href = 'Responds.html';
-}
+  const params = new URLSearchParams();
+  params.set('date', booking.date);
+  params.set('time', booking.time);
+  params.set('players', booking.players.toString());
+  params.set('categories', booking.categories.join(','));
+  params.set('location', booking.location);
 
-function populateConfirmation() {
-  const raw = localStorage.getItem('pulseBooking');
-  const booking = raw ? JSON.parse(raw) : null;
-  const now = new Date();
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-  document.getElementById('refNumber').textContent = 'PVR-' + Math.random().toString(16).slice(2,8).toUpperCase();
-
-  if (!booking) {
-    document.getElementById('conf-date').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-    return;
-  }
-
-  const confDate = document.getElementById('conf-date');
-  const rows = document.querySelectorAll('.details-card .detail-row .value');
-  if (confDate) {
-    confDate.textContent = formatDate(booking.date);
-  }
-
-  const timeValue = document.querySelector('.details-card .detail-row:nth-child(2) .value');
-  if (timeValue) {
-    timeValue.textContent = formatTime(booking.time);
-  }
-
-  const playersValue = document.querySelector('.details-card .detail-row:nth-child(3) .value');
-  if (playersValue) {
-    playersValue.textContent = `${booking.players} Player${booking.players === 1 ? '' : 's'}`;
-  }
-
-  const categoryValue = document.querySelector('.details-card .detail-row:nth-child(4) .value');
-  if (categoryValue) {
-    categoryValue.textContent = booking.categories.length ? booking.categories.join(', ') : 'Action';
-  }
-
-  const locationValue = document.querySelector('.details-card .detail-row:nth-child(5) .value');
-  if (locationValue) {
-    locationValue.textContent = booking.location;
-  }
+  window.location.href = `Responds.html?${params.toString()}`;
 }
 
 window.addEventListener('DOMContentLoaded', initBookingPage);
 </script>
-
+<script>
+function initMap() {
+  const manchester = { lat: 53.4808, lng: -2.2426 };
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 12,
+    center: manchester,
+  });
+  new google.maps.Marker({
+    position: manchester,
+    map: map,
+    title: "Manchester",
+  });
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-USHqjW8IQE7BloNMMA8MSpnOynqcLFc&callback=initMap" async defer></script>
+<script>
+// Adjusts the number of players in the booking form.
+function adjustPlayers(change) {
+  const input = document.getElementById('playerCount');
+  const newVal = parseInt(input.value) + change;
+  if (newVal >= parseInt(input.min) && newVal <= parseInt(input.max)) {
+    input.value = newVal;
+  }
+}
+</script>
+</body>
+</html>
