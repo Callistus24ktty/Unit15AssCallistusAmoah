@@ -218,14 +218,15 @@ h1{
   <!-- Debug info: show the raw booking URL parameters for troubleshooting -->
   <div id="debugBooking" style="margin-top:1.5rem;color:#9a80aa;font-size:0.9rem;max-width:500px;word-break:break-word;"></div>
 
-<!-- Embedded confirmation script directly in Responds.html -->
 <script>
+  // Format a booking date into a readable UK date string.
   function formatDate(dateISO) {
     const date = new Date(dateISO);
     const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
     return new Intl.DateTimeFormat('en-GB', options).format(date);
   }
 
+  // Format a booking time string into a localized display.
   function formatTime(timeValue) {
     const [hours, minutes] = timeValue.split(':');
     const date = new Date();
@@ -233,14 +234,16 @@ h1{
     return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
 
+  // Read booking data from the URL and update the confirmation card.
   function populateConfirmation() {
     const urlParams = new URLSearchParams(window.location.search);
+    const categoriesParam = urlParams.get('categories') || '';
     const booking = urlParams.has('date') && urlParams.has('time')
       ? {
           date: urlParams.get('date'),
           time: urlParams.get('time'),
           players: Number(urlParams.get('players') || '1'),
-          categories: urlParams.get('categories') ? urlParams.get('categories').split(',') : [],
+          categories: categoriesParam.split(',').map((value) => value.trim()).filter(Boolean),
           location: urlParams.get('location') || 'PULSE VR — MANCHESTER',
         }
       : null;
@@ -248,6 +251,7 @@ h1{
     const now = new Date();
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
+    // Create a short booking reference code.
     document.getElementById('refNumber').textContent =
       'PVR-' + Math.random().toString(16).slice(2,8).toUpperCase();
 
@@ -262,24 +266,29 @@ h1{
       confDate.textContent = formatDate(booking.date);
     }
 
-    const timeValue = document.querySelector('.details-card .detail-row:nth-child(2) .value');
+    const timeValue = document.getElementById('conf-time');
     if (timeValue) {
       timeValue.textContent = formatTime(booking.time);
     }
 
-    const playersValue = document.querySelector('.details-card .detail-row:nth-child(3) .value');
+    const playersValue = document.getElementById('conf-players');
     if (playersValue) {
       playersValue.textContent = `${booking.players} Player${booking.players === 1 ? '' : 's'}`;
     }
 
-    const categoryValue = document.querySelector('.details-card .detail-row:nth-child(4) .value');
+    const categoryValue = document.getElementById('conf-categories');
     if (categoryValue) {
       categoryValue.textContent = booking.categories.length ? booking.categories.join(', ') : 'Action';
     }
 
-    const locationValue = document.querySelector('.details-card .detail-row:nth-child(5) .value');
+    const locationValue = document.getElementById('conf-location');
     if (locationValue) {
       locationValue.textContent = booking.location;
+    }
+
+    const debugBooking = document.getElementById('debugBooking');
+    if (debugBooking) {
+      debugBooking.textContent = 'Debug: ' + window.location.search.replace('?','');
     }
   }
 
@@ -287,4 +296,5 @@ h1{
 </script>
 </body>
 </html>
+
 
