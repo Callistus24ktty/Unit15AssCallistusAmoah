@@ -66,7 +66,7 @@
       </video>
     </div>
   </div>
-  <div class="book-form-area">
+   <div class="book-form-area">
     <div class="book-desc">
       <h2 class="section-title neon-text-blue">HOW TO BOOK</h2>
       <p>Choose your preferred date and time, select the games or categories
@@ -79,14 +79,19 @@
     <div>
       <div class="calendar-widget">
         <div class="calendar-header">
-         
-<span id="timeDisplay" style="font-size:.9rem;color:var(--neon-blue);font-family:var(--font-display)">
-  Select time
-</span>
-<div style="margin-top:1.5rem">
-  <input type="time" id="bookingTime" class="form-control" onchange="updateTime()">
-</div>
-
+          <!-- Added date picker so users can select the booking date -->
+          <span id="dateDisplay" style="font-size:.9rem;color:var(--neon-blue);font-family:var(--font-display)">
+            Select date
+          </span>
+          <div style="margin-top:1rem">
+            <input type="date" id="bookingDate" class="form-control" onchange="updateDate()">
+          </div>
+          <span id="timeDisplay" style="font-size:.9rem;color:var(--neon-blue);font-family:var(--font-display);margin-top:1rem;display:block">
+            Select time
+          </span>
+          <div style="margin-top:1rem">
+            <input type="time" id="bookingTime" class="form-control" onchange="updateTime()">
+          </div>
         </div>
         <div class="cal-grid" id="calGrid"></div>
       </div>
@@ -110,11 +115,11 @@
             <button class="num-btn" onclick="adjustPlayers(1)">+</button>
           </div>
           <div style="margin-top:1.5rem">
-  <a href="Responds.html" class="btn btn-primary" style="width:99%">
-    CONFIRM BOOKING
-  </a>
-</div>
-          
+            <!-- Replaced link with button and booking handler so selected data is passed to Responds.html -->
+            <button type="button" class="btn btn-primary" style="width:99%;border:none" onclick="confirmBooking()">
+              CONFIRM BOOKING
+            </button>
+          </div>
         </div>
       </div>
     </div>
