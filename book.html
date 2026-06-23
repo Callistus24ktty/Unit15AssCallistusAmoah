@@ -217,3 +217,148 @@ function adjustPlayers(change) {
   opacity: 0.8;
 }
 </style>
+<script>
+function initBookingPage() {
+  const dateField = document.getElementById('bookingDate');
+  if (dateField) {
+    const today = new Date();
+    const formatted = today.toISOString().split('T')[0];
+    dateField.min = formatted;
+    if (!dateField.value) {
+      dateField.value = formatted;
+    }
+    updateDate();
+    updateTime();
+  }
+
+  if (document.getElementById('refNumber')) {
+    populateConfirmation();
+  }
+}
+
+function updateDate() {
+  const dateField = document.getElementById('bookingDate');
+  const dateDisplay = document.getElementById('dateDisplay');
+  if (!dateField || !dateDisplay) return;
+
+  const dateValue = dateField.value;
+  if (!dateValue) {
+    dateDisplay.textContent = 'Select date';
+    return;
+  }
+
+  const formatted = formatDate(dateValue);
+  dateDisplay.textContent = `Date: ${formatted}`;
+}
+
+function updateTime() {
+  const timeField = document.getElementById('bookingTime');
+  const timeDisplay = document.getElementById('timeDisplay');
+  if (!timeField || !timeDisplay) return;
+
+  const timeValue = timeField.value;
+  if (!timeValue) {
+    timeDisplay.textContent = 'Select time';
+    return;
+  }
+
+  timeDisplay.textContent = `Time: ${formatTime(timeValue)}`;
+}
+
+function formatDate(dateISO) {
+  const date = new Date(dateISO);
+  const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+  return new Intl.DateTimeFormat('en-GB', options).format(date);
+}
+
+function formatTime(timeValue) {
+  const [hours, minutes] = timeValue.split(':');
+  const date = new Date();
+  date.setHours(Number(hours), Number(minutes));
+  return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
+function getSelectedCategories() {
+  const categories = [];
+  document.querySelectorAll('.cat-list input[type="checkbox"]').forEach((checkbox) => {
+    if (checkbox.checked) {
+      categories.push(checkbox.parentElement.textContent.trim());
+    }
+  });
+  return categories;
+}
+
+function confirmBooking() {
+  const dateField = document.getElementById('bookingDate');
+  const timeField = document.getElementById('bookingTime');
+  const playerField = document.getElementById('playerCount');
+
+  if (!dateField || !timeField || !playerField) return;
+
+  if (!dateField.value) {
+    alert('Please select a booking date.');
+    dateField.focus();
+    return;
+  }
+
+  if (!timeField.value) {
+    alert('Please select a booking time.');
+    timeField.focus();
+    return;
+  }
+
+  const booking = {
+    date: dateField.value,
+    time: timeField.value,
+    players: Number(playerField.value) || 1,
+    categories: getSelectedCategories(),
+    location: 'PULSE VR — MANCHESTER',
+  };
+
+  localStorage.setItem('pulseBooking', JSON.stringify(booking));
+  window.location.href = 'Responds.html';
+}
+
+function populateConfirmation() {
+  const raw = localStorage.getItem('pulseBooking');
+  const booking = raw ? JSON.parse(raw) : null;
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  document.getElementById('refNumber').textContent = 'PVR-' + Math.random().toString(16).slice(2,8).toUpperCase();
+
+  if (!booking) {
+    document.getElementById('conf-date').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    return;
+  }
+
+  const confDate = document.getElementById('conf-date');
+  const rows = document.querySelectorAll('.details-card .detail-row .value');
+  if (confDate) {
+    confDate.textContent = formatDate(booking.date);
+  }
+
+  const timeValue = document.querySelector('.details-card .detail-row:nth-child(2) .value');
+  if (timeValue) {
+    timeValue.textContent = formatTime(booking.time);
+  }
+
+  const playersValue = document.querySelector('.details-card .detail-row:nth-child(3) .value');
+  if (playersValue) {
+    playersValue.textContent = `${booking.players} Player${booking.players === 1 ? '' : 's'}`;
+  }
+
+  const categoryValue = document.querySelector('.details-card .detail-row:nth-child(4) .value');
+  if (categoryValue) {
+    categoryValue.textContent = booking.categories.length ? booking.categories.join(', ') : 'Action';
+  }
+
+  const locationValue = document.querySelector('.details-card .detail-row:nth-child(5) .value');
+  if (locationValue) {
+    locationValue.textContent = booking.location;
+  }
+}
+
+window.addEventListener('DOMContentLoaded', initBookingPage);
+</script>
+
