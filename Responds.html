@@ -189,19 +189,19 @@ h1{
     </div>
     <div class="detail-row">
       <span class="label">Time</span>
-      <span class="value">9:41 AM</span>
+      <span class="value" id="conf-time">9:41 AM</span>
     </div>
     <div class="detail-row">
       <span class="label">Players</span>
-      <span class="value">2 Players</span>
+      <span class="value" id="conf-players">2 Players</span>
     </div>
     <div class="detail-row">
       <span class="label">Categories</span>
-      <span class="value">Action, Sci-Fi, Adventure</span>
+      <span class="value" id="conf-categories">Action, Sci-Fi, Adventure</span>
     </div>
     <div class="detail-row">
       <span class="label">Location</span>
-      <span class="value">PULSE VR — MANCHESTER</span>
+      <span class="value" id="conf-location">PULSE VR — MANCHESTER</span>
     </div>
     <div class="detail-row">
       <span class="label">Status</span>
@@ -221,7 +221,9 @@ h1{
 <script>
   // Format a booking date into a readable UK date string.
   function formatDate(dateISO) {
-    const date = new Date(dateISO);
+    // Parse as local date to avoid UTC midnight timezone shift
+    const [year, month, day] = dateISO.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
     const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
     return new Intl.DateTimeFormat('en-GB', options).format(date);
   }
@@ -237,58 +239,52 @@ h1{
   // Read booking data from the URL and update the confirmation card.
   function populateConfirmation() {
     const urlParams = new URLSearchParams(window.location.search);
-    const categoriesParam = urlParams.get('categories') || '';
-    const booking = urlParams.has('date') && urlParams.has('time')
-      ? {
-          date: urlParams.get('date'),
-          time: urlParams.get('time'),
-          players: Number(urlParams.get('players') || '1'),
-          categories: categoriesParam.split(',').map((value) => value.trim()).filter(Boolean),
-          location: urlParams.get('location') || 'PULSE VR — MANCHESTER',
-        }
-      : null;
 
-    const now = new Date();
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-    // Create a short booking reference code.
+    // Generate booking reference
     document.getElementById('refNumber').textContent =
       'PVR-' + Math.random().toString(16).slice(2,8).toUpperCase();
 
-    if (!booking) {
-      document.getElementById('conf-date').textContent =
-        `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-      return;
-    }
-
+    // --- DATE ---
+    const dateParam = urlParams.get('date');
     const confDate = document.getElementById('conf-date');
     if (confDate) {
-      confDate.textContent = formatDate(booking.date);
+      if (dateParam) {
+        confDate.textContent = formatDate(dateParam);
+      } else {
+        const now = new Date();
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        confDate.textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+      }
     }
 
-    const timeValue = document.getElementById('conf-time');
-    if (timeValue) {
-      timeValue.textContent = formatTime(booking.time);
+    // --- TIME ---
+    const timeParam = urlParams.get('time');
+    const confTime = document.getElementById('conf-time');
+    if (confTime) {
+      confTime.textContent = timeParam ? formatTime(timeParam) : '—';
     }
 
-    const playersValue = document.getElementById('conf-players');
-    if (playersValue) {
-      playersValue.textContent = `${booking.players} Player${booking.players === 1 ? '' : 's'}`;
+    // --- PLAYERS ---
+    const playersParam = urlParams.get('players');
+    const confPlayers = document.getElementById('conf-players');
+    if (confPlayers) {
+      const players = Number(playersParam) || 1;
+      confPlayers.textContent = `${players} Player${players === 1 ? '' : 's'}`;
     }
 
-    const categoryValue = document.getElementById('conf-categories');
-    if (categoryValue) {
-      categoryValue.textContent = booking.categories.length ? booking.categories.join(', ') : 'Action';
+    // --- CATEGORIES ---
+    const categoriesParam = urlParams.get('categories') || '';
+    const confCategories = document.getElementById('conf-categories');
+    if (confCategories) {
+      const cats = categoriesParam.split(',').map(c => c.trim()).filter(Boolean);
+      confCategories.textContent = cats.length ? cats.join(', ') : 'Action';
     }
 
-    const locationValue = document.getElementById('conf-location');
-    if (locationValue) {
-      locationValue.textContent = booking.location;
-    }
-
-    const debugBooking = document.getElementById('debugBooking');
-    if (debugBooking) {
-      debugBooking.textContent = 'Debug: ' + window.location.search.replace('?','');
+    // --- LOCATION ---
+    const locationParam = urlParams.get('location');
+    const confLocation = document.getElementById('conf-location');
+    if (confLocation) {
+      confLocation.textContent = locationParam || 'PULSE VR — MANCHESTER';
     }
   }
 
@@ -296,5 +292,3 @@ h1{
 </script>
 </body>
 </html>
-
-
