@@ -275,6 +275,11 @@ h1{
     const locationValue = document.querySelector('.details-card .detail-row:nth-child(5) .value');
     if (locationValue) {
       locationValue.textContent = booking.location;
+       
+    const debugBooking = document.getElementById('debugBooking');
+    if (debugBooking) {
+      debugBooking.textContent = 'Debug: ' + window.location.search.replace('?','');
+    }
     }
   }
 
