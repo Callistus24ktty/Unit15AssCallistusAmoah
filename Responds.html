@@ -214,7 +214,72 @@ h1{
     <button class="btn btn-primary" onclick="window.location.href='index.html'">BACK TO HOME</button>
     <button class="btn btn-outline" onclick="window.print()">PRINT CONFIRMATION</button>
   </div>
+<script>
+  function formatDate(dateISO) {
+    const date = new Date(dateISO);
+    const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+    return new Intl.DateTimeFormat('en-GB', options).format(date);
+  }
 
+  function formatTime(timeValue) {
+    const [hours, minutes] = timeValue.split(':');
+    const date = new Date();
+    date.setHours(Number(hours), Number(minutes));
+    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function populateConfirmation() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const booking = urlParams.has('date') && urlParams.has('time')
+      ? {
+          date: urlParams.get('date'),
+          time: urlParams.get('time'),
+          players: Number(urlParams.get('players') || '1'),
+          categories: urlParams.get('categories') ? urlParams.get('categories').split(',') : [],
+          location: urlParams.get('location') || 'PULSE VR — MANCHESTER',
+        }
+      : null;
+
+    const now = new Date();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    document.getElementById('refNumber').textContent =
+      'PVR-' + Math.random().toString(16).slice(2,8).toUpperCase();
+
+    if (!booking) {
+      document.getElementById('conf-date').textContent =
+        `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+      return;
+    }
+
+    const confDate = document.getElementById('conf-date');
+    if (confDate) {
+      confDate.textContent = formatDate(booking.date);
+    }
+
+    const timeValue = document.querySelector('.details-card .detail-row:nth-child(2) .value');
+    if (timeValue) {
+      timeValue.textContent = formatTime(booking.time);
+    }
+
+    const playersValue = document.querySelector('.details-card .detail-row:nth-child(3) .value');
+    if (playersValue) {
+      playersValue.textContent = `${booking.players} Player${booking.players === 1 ? '' : 's'}`;
+    }
+
+    const categoryValue = document.querySelector('.details-card .detail-row:nth-child(4) .value');
+    if (categoryValue) {
+      categoryValue.textContent = booking.categories.length ? booking.categories.join(', ') : 'Action';
+    }
+
+    const locationValue = document.querySelector('.details-card .detail-row:nth-child(5) .value');
+    if (locationValue) {
+      locationValue.textContent = booking.location;
+    }
+  }
+
+  populateConfirmation();
+</script>
 <script src="javascript/javascript.js"></script>
 </body>
 </html>
