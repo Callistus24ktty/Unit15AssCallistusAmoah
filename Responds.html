@@ -215,20 +215,7 @@ h1{
     <button class="btn btn-outline" onclick="window.print()">PRINT CONFIRMATION</button>
   </div>
 
-<script>
-  /* ============================================================
-     Generate a random booking reference on page load
-     e.g. PVR-4F2A9B
-     ============================================================ */
-  const ref = 'PVR-' + Math.random().toString(16).slice(2,8).toUpperCase();
-  document.getElementById('refNumber').textContent = ref;
-
-  /* Set today's date in the summary card */
-  const now = new Date();
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('conf-date').textContent =
-    `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-</script>
+<script src="javascript/javascript.js"></script>
 </body>
 </html>
 
